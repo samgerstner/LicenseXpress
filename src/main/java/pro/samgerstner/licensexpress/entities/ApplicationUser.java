@@ -1,7 +1,13 @@
 package pro.samgerstner.licensexpress.entities;
 
 import jakarta.persistence.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Table(name = "application_users")
@@ -145,5 +151,46 @@ public class ApplicationUser
    public void setProductKeys (List<ProductKey> productKeys)
    {
       this.productKeys = productKeys;
+   }
+
+   public void startActivation()
+   {
+      LocalDateTime expiration = LocalDateTime.now();
+      expiration = expiration.plusHours(2);
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
+
+      this.activationToken = generateActivationToken();
+      this.activationTokenExpiry = format.format(expiration);
+   }
+
+   private String generateActivationToken()
+   {
+      String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!";
+      StringBuilder builder = new StringBuilder();
+      Random random = new Random();
+
+      for(int index = 0; index < 128; index++)
+      {
+         int randomIndex = random.nextInt(characters.length());
+         builder.append(characters.charAt(randomIndex));
+      }
+
+      return builder.toString();
+   }
+
+   public String encodeActivationToken()
+   {
+      String encodedToken = null;
+
+      try
+      {
+         encodedToken = URLEncoder.encode(this.activationToken, StandardCharsets.UTF_8);
+         return encodedToken;
+      }
+      catch(Exception e)
+      {
+         e.printStackTrace();
+         return null;
+      }
    }
 }
