@@ -1,7 +1,6 @@
 package pro.samgerstner.licensexpress.entities;
 
 import jakarta.persistence.*;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
